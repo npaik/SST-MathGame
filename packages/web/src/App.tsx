@@ -1,24 +1,27 @@
-import { useState } from "react";
-import "./App.css";
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 
-function App() {
-  const [message, setMessage] = useState("Hi 👋");
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen";
 
-  function onClick() {
-    fetch(import.meta.env.VITE_APP_API_URL)
-      .then((response) => response.text())
-      .then(setMessage);
+// Create a new router instance
+const router = createRouter({ routeTree });
+
+// Register the router instance for type safety
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
   }
-
-  return (
-    <div className="App">
-      <div className="card">
-        <button onClick={onClick}>
-          Message is "<i>{message}</i>"
-        </button>
-      </div>
-    </div>
-  );
 }
 
-export default App;
+// Render the app
+const rootElement = document.getElementById("app")!;
+if (!rootElement.innerHTML) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>
+  );
+}
