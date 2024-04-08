@@ -26,22 +26,22 @@ builder.Services.AddDbContext<DatabaseContext>(
     }
 );
 
-builder.Services.AddControllers();
+// builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// builder.Services.AddSwaggerGen();
 
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI();
+// }
 
-app.MapControllers();
+// app.MapControllers();
 
 app.MapGet("/cs", (int difficultyLevel) =>
 {
@@ -57,3 +57,5 @@ app.MapGet("/cs", (int difficultyLevel) =>
 });
 
 app.Run();
+
+

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 import { useState, useRef, useEffect } from "react";
+
 export const Route = createFileRoute("/_authenticated/profile")({
   component: Profile,
 });
@@ -29,7 +30,7 @@ function Profile() {
 
   const handleRemoveSelectedFile = () => {
     setSelectedFile(null);
-    setProfileImageUrl(user?.picture ?? null); 
+    setProfileImageUrl(user?.picture ?? null);
   };
 
   const API_URL = import.meta.env.VITE_APP_API_URL;
@@ -132,6 +133,7 @@ function Profile() {
       });
       if (!usersResponse.ok) throw new Error("Failed to fetch users");
       const { users } = await usersResponse.json();
+      // @ts-ignore
       const existingUser = users.find((u) => u.email === user?.email);
       if (existingUser) {
         setProfileImageUrl(existingUser.imageurl);
@@ -175,17 +177,15 @@ function Profile() {
               Welcome back! {user?.given_name} {user?.family_name}
             </p>
           </div>
-          {/* Show Remove button when a file is selected */}
           {selectedFile && (
             <button
-              type="button" // Ensure this does not submit the form
+              type="button" 
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
               onClick={handleRemoveSelectedFile}
             >
               Remove
             </button>
           )}
-          {/* Only show the submit button if selectedFile is not null */}
           {selectedFile && (
             <button
               type="submit"

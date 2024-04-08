@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/createQuiz")({
   component: CreateQuiz,
@@ -23,6 +23,24 @@ function CreateQuiz() {
   const { getToken } = useKindeAuth();
 
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   async function getCurrentUser() {
+  //     const token = await getToken();
+  //     if (!token) {
+  //       throw new Error("No token found");
+  //     }
+  //     const usersResponse = await fetch(`${API_URL}/users`, {
+  //       headers: {
+  //         Authorization: token,
+  //       },
+  //     });
+  //     if (!usersResponse.ok) throw new Error("Failed to fetch users");
+  //     const { users } = await usersResponse.json();
+  //     console.log(users);
+  //   }
+  //   getCurrentUser();
+  // }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

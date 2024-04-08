@@ -24,6 +24,7 @@ export function API({ stack }: StackContext) {
     },
     routes: {
       "GET /": "packages/functions/src/lambda.handler",
+      "GET /difficulty": "packages/functions/src/difficulty.handler",
       "GET /users": "packages/functions/src/users.handler",
       "GET /users/{id}": "packages/functions/src/users.handler",
       "PUT /users/{id}": "packages/functions/src/users.handler",
@@ -41,13 +42,12 @@ export function API({ stack }: StackContext) {
           handler: "packages/functions/src/s3.handler",
         },
       },
-      // "GET /difficulty": "packages/functions/src/difficulty.handler",
-      "GET /cs": {
-        function: {
-          handler: "packages/CSharp",
-          runtime: "container",
-        },
-      },
+      // "GET /cs": {
+      //   function: {
+      //     handler: "packages/CSharp",
+      //     runtime: "container",
+      //   },
+      // },
       // "ANY /api/{proxy+}": {
       //   function: {
       //     handler: "packages/CSharp",

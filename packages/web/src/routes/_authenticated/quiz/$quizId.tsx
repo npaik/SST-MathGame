@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/quiz/$quizId")({
   component: QuizDetail,
@@ -24,6 +24,24 @@ function QuizDetail() {
   const { getToken } = useKindeAuth();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function getCurrentUser() {
+      const token = await getToken();
+      if (!token) {
+        throw new Error("No token found");
+      }
+      const usersResponse = await fetch(`${API_URL}/users`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      if (!usersResponse.ok) throw new Error("Failed to fetch users");
+      const { users } = await usersResponse.json();
+      console.log(users);
+    }
+    getCurrentUser();
+  }, []);
 
   useEffect(() => {
     async function fetchQuiz() {
@@ -205,14 +223,14 @@ function QuizDetail() {
           <Link
             to="/"
             className="bg-gradient-to-br from-pink-700 to-purple-500 hover:from-purple-500 hover:to-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition ease-in-out duration-150 transform hover:scale-105 text-center"
-            style={{ width: "fit-content", padding: "0.5rem 1rem" }} 
+            style={{ width: "fit-content", padding: "0.5rem 1rem" }}
           >
             Go back to main
           </Link>
           <button
             onClick={() => handleDeleteQuiz()}
             className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition ease-in-out duration-150 transform hover:scale-105"
-            style={{ width: "fit-content", padding: "0.5rem 1rem" }} 
+            style={{ width: "fit-content", padding: "0.5rem 1rem" }}
           >
             Delete Quiz
           </button>

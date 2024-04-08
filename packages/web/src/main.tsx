@@ -19,7 +19,6 @@ const notFoundRoute = new NotFoundRoute({
   component: () => "404 Not Found",
 });
 
-// Set up a Router instance
 const router = createRouter({
   routeTree,
   notFoundRoute,
@@ -27,7 +26,6 @@ const router = createRouter({
 
 export const queryClient = new QueryClient();
 
-// Register things for typesafety
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;

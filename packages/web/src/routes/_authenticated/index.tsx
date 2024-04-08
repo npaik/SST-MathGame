@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 type QuizStatus = "NotAttempted" | "Correct" | "Incorrect";
@@ -24,6 +24,7 @@ function Index() {
 
   useEffect(() => {
     if (!isAuthenticated) {
+      // @ts-ignore
       navigate({ to: "/_authenticated/" });
     }
   }, [isAuthenticated, navigate]);
@@ -62,7 +63,7 @@ function Index() {
       }
       try {
         const response = await fetch(
-          `${API_URL}/cs?difficultyLevel=${difficultyLevel}`,
+          `${API_URL}/difficulty?difficultyLevel=${difficultyLevel}`,
           {
             headers: {
               Authorization: token,
@@ -140,17 +141,18 @@ function Index() {
         >
           Hard
         </button>
-        <a
-          href="/createQuiz"
+        <Link
+          to="/createQuiz"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
         >
           Create Quiz
-        </a>
+        </Link>
       </div>
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredQuizzes.map((quiz) => (
           <li key={quiz.id} className="cursor-pointer">
-            <a href={`/quiz/${quiz.id}`} className="block">
+            {/* @ts-ignore */}
+            <Link to={`/quiz/${quiz.id}`} className="block">
               <div
                 className={`p-6 shadow-xl rounded-lg bg-gradient-to-br ${getColorForStatus(
                   quiz.status
@@ -160,7 +162,7 @@ function Index() {
                   Quiz {quiz.id} - {quiz.difficultyString || "Loading..."}
                 </h3>
               </div>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
