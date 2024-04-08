@@ -27,6 +27,11 @@ function Profile() {
     fileInputRef.current?.click();
   };
 
+  const handleRemoveSelectedFile = () => {
+    setSelectedFile(null);
+    setProfileImageUrl(user?.picture ?? null); // Reset to original profile image URL
+  };
+
   const API_URL = import.meta.env.VITE_APP_API_URL;
 
   // @ts-ignore
@@ -107,6 +112,7 @@ function Profile() {
       }
 
       console.log("User profile updated successfully.");
+      setSelectedFile(null);
     } catch (error) {
       console.error("Error updating user profile:", error);
     }
@@ -137,7 +143,6 @@ function Profile() {
                     if (file) {
                       setProfileImageUrl(URL.createObjectURL(file));
                       setSelectedFile(file);
-                      console.log(file);
                     }
                   }}
                   style={{ display: "none" }}
@@ -148,12 +153,25 @@ function Profile() {
               Welcome back! {user?.given_name} {user?.family_name}
             </p>
           </div>
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Submit
-          </button>
+          {/* Show Remove button when a file is selected */}
+          {selectedFile && (
+            <button
+              type="button" // Ensure this does not submit the form
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
+              onClick={handleRemoveSelectedFile}
+            >
+              Remove
+            </button>
+          )}
+          {/* Only show the submit button if selectedFile is not null */}
+          {selectedFile && (
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Submit
+            </button>
+          )}
           <button
             onClick={() => logout()}
             className="bg-gradient-to-br from-pink-700 to-purple-500 hover:from-purple-500 hover:to-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition ease-in-out duration-150 transform hover:scale-105 block w-full mt-4"
