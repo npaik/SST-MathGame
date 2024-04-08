@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 export const Route = createFileRoute("/_authenticated/profile")({
   component: Profile,
 });
@@ -29,7 +29,7 @@ function Profile() {
 
   const handleRemoveSelectedFile = () => {
     setSelectedFile(null);
-    setProfileImageUrl(user?.picture ?? null); // Reset to original profile image URL
+    setProfileImageUrl(user?.picture ?? null); 
   };
 
   const API_URL = import.meta.env.VITE_APP_API_URL;
@@ -85,6 +85,7 @@ function Profile() {
       });
 
       const imageUrl = signedUrl.split("?")[0];
+      console.log("Image uploaded successfully:", imageUrl);
       setProfileImageUrl(imageUrl);
 
       const userData = {
@@ -117,6 +118,27 @@ function Profile() {
       console.error("Error updating user profile:", error);
     }
   };
+
+  useEffect(() => {
+    async function getCurrentUser() {
+      const token = await getToken();
+      if (!token) {
+        throw new Error("No token found");
+      }
+      const usersResponse = await fetch(`${API_URL}/users`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      if (!usersResponse.ok) throw new Error("Failed to fetch users");
+      const { users } = await usersResponse.json();
+      const existingUser = users.find((u) => u.email === user?.email);
+      if (existingUser) {
+        setProfileImageUrl(existingUser.imageurl);
+      }
+    }
+    getCurrentUser();
+  }, []);
 
   return (
     <div className="container mx-auto p-4 font-baloo min-h-screen bg-pink-300">
