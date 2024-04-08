@@ -11,38 +11,75 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
-import { Route as QuizQuizIdImport } from './routes/quiz/$quizId'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedProfileImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedCreateQuizImport } from './routes/_authenticated/createQuiz'
+import { Route as AuthenticatedQuizQuizIdImport } from './routes/_authenticated/quiz/$quizId'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
-  path: '/',
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRoute,
 } as any)
 
-const QuizQuizIdRoute = QuizQuizIdImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
+  path: '/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
+const AuthenticatedProfileRoute = AuthenticatedProfileImport.update({
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
+const AuthenticatedCreateQuizRoute = AuthenticatedCreateQuizImport.update({
+  path: '/createQuiz',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
+const AuthenticatedQuizQuizIdRoute = AuthenticatedQuizQuizIdImport.update({
   path: '/quiz/$quizId',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      preLoaderRoute: typeof IndexImport
+    '/_authenticated': {
+      preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
     }
-    '/quiz/$quizId': {
-      preLoaderRoute: typeof QuizQuizIdImport
-      parentRoute: typeof rootRoute
+    '/_authenticated/createQuiz': {
+      preLoaderRoute: typeof AuthenticatedCreateQuizImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/profile': {
+      preLoaderRoute: typeof AuthenticatedProfileImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/': {
+      preLoaderRoute: typeof AuthenticatedIndexImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/quiz/$quizId': {
+      preLoaderRoute: typeof AuthenticatedQuizQuizIdImport
+      parentRoute: typeof AuthenticatedImport
     }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([IndexRoute, QuizQuizIdRoute])
+export const routeTree = rootRoute.addChildren([
+  AuthenticatedRoute.addChildren([
+    AuthenticatedCreateQuizRoute,
+    AuthenticatedProfileRoute,
+    AuthenticatedIndexRoute,
+    AuthenticatedQuizQuizIdRoute,
+  ]),
+])
 
 /* prettier-ignore-end */

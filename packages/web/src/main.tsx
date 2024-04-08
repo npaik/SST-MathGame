@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { Route as rootRoute } from "./routes/__root.tsx";
+import { KindeProvider } from "@kinde-oss/kinde-auth-react";
 
 const notFoundRoute = new NotFoundRoute({
   getParentRoute: () => rootRoute,
@@ -34,8 +35,15 @@ declare module "@tanstack/react-router" {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <KindeProvider
+      clientId="319370f8f4bc4fd5ab8801733a71b888"
+      domain="https://mathgame.kinde.com"
+      logoutUri={window.location.origin}
+      redirectUri={window.location.origin}
+    >
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </KindeProvider>
   </React.StrictMode>
 );

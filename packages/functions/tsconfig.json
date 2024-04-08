@@ -7,7 +7,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "paths": {
-      "@foo-bar/core/*": ["../core/src/*"]
+      "@finalproject/core/*": ["../core/src/*"]
     }
   }
 }

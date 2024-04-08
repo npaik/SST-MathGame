@@ -1,11 +1,13 @@
 import { SSTConfig } from "sst";
 import { API } from "./stacks/MyStack";
+import dotenv from "dotenv";
+dotenv.config();
 
 export default {
   config(_input) {
     return {
-      name: "sstapptest",
-      region: "us-west-2",
+      name: "MathQuiz",
+      region: "ca-central-1",
     };
   },
   stacks(app) {

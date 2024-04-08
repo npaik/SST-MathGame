@@ -43,9 +43,17 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-app.MapGet("/cs", () =>
+app.MapGet("/cs", (int difficultyLevel) =>
 {
-  return Results.Json(new { message = "Hello C#!" });
+    string difficultyString = difficultyLevel switch
+    {
+        1 => "Easy",
+        2 => "Medium",
+        3 => "Hard",
+        _ => "Unknown"
+    };
+
+    return Results.Json(new { difficulty = difficultyString });
 });
 
 app.Run();
