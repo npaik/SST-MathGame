@@ -19,18 +19,27 @@ function Index() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
   const { isAuthenticated } = useKindeAuth();
+  const { getToken } = useKindeAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate({ to: "/_authenticated" });
+      navigate({ to: "/_authenticated/" });
     }
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     async function getQuizzes() {
+      const token = await getToken();
+      if (!token) {
+        throw new Error("No token found");
+      }
       try {
-        const res = await fetch(`${API_URL}/quizzes`);
+        const res = await fetch(`${API_URL}/quizzes`, {
+          headers: {
+            Authorization: token,
+          },
+        });
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
@@ -47,10 +56,20 @@ function Index() {
 
   async function enrichQuizzesWithDifficulty(fetchedQuizzes: Quiz[]) {
     const getDifficultyString = async (difficultyLevel: number) => {
+      const token = await getToken();
+      if (!token) {
+        throw new Error("No token found");
+      }
       try {
         const response = await fetch(
-          `${API_URL}/cs?difficultyLevel=${difficultyLevel}`
+          `${API_URL}/cs?difficultyLevel=${difficultyLevel}`,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
         );
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -69,8 +88,8 @@ function Index() {
       }))
     );
 
-    setQuizzes(quizzesWithDifficultyString); // Update original quizzes state
-    setFilteredQuizzes(quizzesWithDifficultyString); // Also set filtered quizzes
+    setQuizzes(quizzesWithDifficultyString);
+    setFilteredQuizzes(quizzesWithDifficultyString);
   }
 
   const sortQuizzes = (difficultyLevel: number) => {
@@ -84,11 +103,11 @@ function Index() {
   function getColorForStatus(status?: QuizStatus) {
     switch (status) {
       case "NotAttempted":
-        return "bg-gray-400 hover:bg-gray-500";
+        return "bg-gray-400 hover:bg-gray-700";
       case "Correct":
-        return "bg-green-400 hover:bg-green-500";
+        return "bg-green-500 hover:bg-green-700";
       case "Incorrect":
-        return "bg-red-400 hover:bg-red-500";
+        return "bg-red-500 hover:bg-red-700";
       default:
         return "bg-gray-300";
     }
@@ -99,31 +118,31 @@ function Index() {
       <div className="flex flex-wrap justify-center gap-4 mb-8">
         <button
           onClick={() => sortQuizzes(0)}
-          className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
         >
           All
         </button>
         <button
           onClick={() => sortQuizzes(1)}
-          className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
         >
           Easy
         </button>
         <button
           onClick={() => sortQuizzes(2)}
-          className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
         >
           Normal
         </button>
         <button
           onClick={() => sortQuizzes(3)}
-          className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
         >
           Hard
         </button>
         <a
           href="/createQuiz"
-          className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out transform hover:scale-110"
         >
           Create Quiz
         </a>

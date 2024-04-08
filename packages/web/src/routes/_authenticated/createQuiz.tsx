@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 export const Route = createFileRoute("/_authenticated/createQuiz")({
   component: CreateQuiz,
@@ -19,15 +20,21 @@ function CreateQuiz() {
     solution: "",
     difficultyLevel: "",
   });
+  const { getToken } = useKindeAuth();
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = await getToken();
+    if (!token) {
+      throw new Error("No token found");
+    }
     try {
       const response = await fetch(`${API_URL}/quizzes`, {
         method: "POST",
         headers: {
+          Authorization: token,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

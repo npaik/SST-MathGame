@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
 
 import {
   RouterProvider,
@@ -36,13 +37,16 @@ declare module "@tanstack/react-router" {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <KindeProvider
+      audience={import.meta.env.VITE_APP_KINDE_AUDIENCE}
       clientId="319370f8f4bc4fd5ab8801733a71b888"
       domain="https://mathgame.kinde.com"
       logoutUri={window.location.origin}
       redirectUri={window.location.origin}
     >
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <ReactQueryStreamedHydration>
+          <RouterProvider router={router} />
+        </ReactQueryStreamedHydration>
       </QueryClientProvider>
     </KindeProvider>
   </React.StrictMode>

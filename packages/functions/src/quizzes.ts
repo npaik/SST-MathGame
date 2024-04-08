@@ -1,8 +1,6 @@
 import { Hono } from "hono";
 import { handle } from "hono/aws-lambda";
 import { quizzes as quizzesTable } from "@finalproject/core/db/schema/quizzes";
-import { users as usersTable } from "@finalproject/core/db/schema/users";
-import { userProgress as userProgressTable } from "@finalproject/core/db/schema/userProgress";
 import { db } from "@finalproject/core/db";
 import { eq } from "drizzle-orm";
 
@@ -95,6 +93,32 @@ app.post("/quizzes", async (c) => {
   const newQuiz = await db.insert(quizzesTable).values(quiz).returning();
   console.log("New quiz created: ", newQuiz);
   return c.json({ quiz: newQuiz });
+});
+
+app.delete("/quizzes/:id", async (c) => {
+  const id = c.req.param("id");
+  const quizId = parseInt(id, 10);
+
+  if (isNaN(quizId)) {
+    return c.json({ error: "Invalid ID provided" }, 400);
+  }
+
+  try {
+    const result = await db
+      .delete(quizzesTable)
+      .where(eq(quizzesTable.id, quizId))
+      .execute();
+
+    // @ts-ignore
+    if (result.count === 0) {
+      return c.json({ message: "Quiz not found or already deleted" }, 404);
+    }
+
+    return c.json({ message: "Quiz deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting quiz:", error);
+    return c.json({ error: "An error occurred while deleting the quiz." }, 500);
+  }
 });
 
 export const handler = handle(app);
