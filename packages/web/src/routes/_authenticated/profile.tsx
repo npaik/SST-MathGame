@@ -41,6 +41,22 @@ function Profile() {
     if (!selectedFile) return;
 
     try {
+      let userId = null;
+      const usersResponse = await fetch(`${API_URL}/users`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      if (!usersResponse.ok) throw new Error("Failed to fetch users");
+
+      const { users } = await usersResponse.json();
+      // @ts-ignore
+      const existingUser = users.find((u) => u.email === user?.email);
+
+      if (existingUser) {
+        userId = existingUser.id;
+      }
+
       const signedURLResponse = await fetch(`${API_URL}/signed-url`, {
         method: "POST",
         headers: {
@@ -53,11 +69,9 @@ function Profile() {
           checksum: await computeSHA256(selectedFile),
         }),
       });
-      console.log("signedURLResponse", signedURLResponse);
+      const { url: signedUrl } = await signedURLResponse.json();
 
-      const { url } = (await signedURLResponse.json()) as { url: string };
-
-      await fetch(url, {
+      await fetch(signedUrl, {
         method: "PUT",
         body: selectedFile,
         headers: {
@@ -65,33 +79,36 @@ function Profile() {
         },
       });
 
-      const imageUrl = url.split("?")[0];
+      const imageUrl = signedUrl.split("?")[0];
       setProfileImageUrl(imageUrl);
-      console.log("S3 bucket image url", imageUrl);
-      console.log(user);
-      try {
-        const response = await fetch(`${API_URL}/users`, {
-          method: "POST",
+
+      const userData = {
+        email: user?.email,
+        firstname: user?.given_name,
+        lastname: user?.family_name,
+        imageurl: imageUrl,
+      };
+
+      const userUpdateResponse = await fetch(
+        `${API_URL}/users${userId ? `/${userId}` : ""}`,
+        {
+          method: userId ? "PUT" : "POST",
           headers: {
             Authorization: token,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            email: user?.email,
-            firstname: user?.given_name,
-            lastname: user?.family_name,
-            imageurl: imageUrl,
-          }),
-        });
+          body: JSON.stringify(userData),
+        }
+      );
 
-        const responseData = await response.json();
-        if (!response.ok) throw new Error(responseData.error);
-        console.log("User created with new image:", responseData.user);
-      } catch (error) {
-        console.error("Error creating user:", error);
+      if (!userUpdateResponse.ok) {
+        const errorData = await userUpdateResponse.json();
+        throw new Error(errorData.error || "Failed to update user data");
       }
+
+      console.log("User profile updated successfully.");
     } catch (error) {
-      console.error("Failed to get signed URL:", error);
+      console.error("Error updating user profile:", error);
     }
   };
 
